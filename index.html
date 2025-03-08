@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Strategy Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #6f42c1, #ff6f61);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #2c3e50;
+            padding: 40px 60px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 400px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h1 {
+            font-size: 1.8rem; /* Reduced font size */
+            margin-bottom: 20px;
+            color: #ecf0f1;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            background-color: #34495e; /* Background for the title */
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .stats {
+            margin-bottom: 30px;
+            font-size: 1.4rem; /* Increased font size */
+            background-color: #34495e; /* Background for the stats frame */
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .stats p {
+            margin-bottom: 10px;
+        }
+
+        .stats span {
+            font-weight: bold;
+            color: #1abc9c;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Add space between button groups */
+            margin-top: 20px;
+        }
+
+        .group {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* Add space between buttons in each group */
+        }
+
+        button {
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            width: 100%;
+            max-width: 150px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: scale(1.1);
+        }
+
+        .winBtn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .loseBtn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .undoBtn {
+            background-color: #f1c40f;
+            color: white;
+        }
+
+        .redoBtn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .resetBtn {
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+        }
+
+        .autoKeyBtn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .autoKeyReadBtn {
+            background-color: #9b59b6;
+            color: white;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .confirm-reset {
+            display: none;
+            background: rgba(5, 5, 5, 0.7);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirm-reset .modal {
+            background: rgb(95, 135, 223);
+            color: rgb(255, 255, 255); /* Changed text color to black for better visibility */
+            padding: 40px;
+            border-radius: 10px;
+            top: 0;
+            left: 0;
+            justify-content: center;
+            text-align: center;
+            width: 300px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .confirm-reset .modal button {
+            margin-top: 15px;
+            width: 100px;
+        }
+
+        .confirm-reset .modal button:nth-child(1) {
+            margin-right: 20px;
+        }
+
+                /* Notification style for AutoKey Read popup */
+                .autoKeyRead-notification {
+            display: none; /* Initially hidden */
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it's on top of other elements */
+        }
+
+        .autoKeyRead-modal {
+            background-color: #34495e; /* Modal background color */
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            width: 80%;
+            max-width: 400px; /* Limit the max width */
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Space between each paragraph */
+        }
+
+        .autoKeyRead-modal p {
+            font-size: 1.2rem;
+            line-height: 1.6; /* Space between lines */
+            margin: 0;
+        }
+
+        .autoKeyRead-modal button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            align-self: center; /* Centers the button horizontally */
+        }
+
+        .autoKeyRead-modal button:hover {
+            background-color: #3498db;
+        }
+
+
+        /* Credits section */
+        .credits {
+            margin-top: 35px;
+            font-size: 1rem;
+            color: #ecf0f1;
+            font-weight: bold;
+            border-radius: 10px;
+        }
+
+        .credits a {
+            color: #ff9f43;
+            text-decoration: none;
+            line-height: 2; /* Space between lines */
+        }
+
+        .credits a:hover {
+            text-decoration: underline #ffffff;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Trading Strategy Tracker</h1>
+        <div class="stats">
+            <p><strong>Wins:</strong> <span id="wins">0</span></p>
+            <p><strong>Losses:</strong> <span id="losses">0</span></p>
+            <p><strong>Winrate:</strong> <span id="winrate">0%</span></p>
+        </div>
+
+        <div class="button-group">
+            <!-- Group 1: Win and Lose buttons -->
+            <div class="group">
+                <button id="winBtn" class="winBtn">Win</button>
+                <button id="loseBtn" class="loseBtn">Lose</button>
+            </div>
+
+            <!-- Group 2: Undo and Redo buttons -->
+            <div class="group">
+                <button id="undoBtn" class="undoBtn">Undo</button>
+                <button id="redoBtn" class="redoBtn">Redo</button>
+            </div>
+
+            <!-- Group 3: Reset button -->
+            <div class="group">
+                <button id="resetBtn" class="resetBtn">Reset</button>
+            </div>
+
+            <!-- Group 4: Auto Key and Auto Key Read buttons -->
+            <div class="group">
+                <button id="autoKeyBtn" class="autoKeyBtn">Auto Key</button>
+                <button id="autoKeyReadBtn" class="autoKeyReadBtn">AutoKey - Read</button>
+            </div>
+        </div>
+
+        <!-- Credits -->
+        <div class="credits">
+            <p>Credits to J4RL3M, AKA: Valeri.</p>
+            <a href="https://images.unsplash.com/photo-1508084957543-3ac6e23b01b2?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" target="_blank">Click here for More Information.</a>
+        </div>
+    </div>
+
+    <!-- Reset Confirmation Modal -->
+    <div class="confirm-reset" id="confirmReset">
+        <div class="modal">
+            <p>Are you sure you want to reset the data?</p>
+            <button id="confirmYes">Yes</button>
+            <button id="confirmNo">No</button>
+        </div>
+    </div>
+
+    <!-- AutoKey Read Notification -->
+    <div class="autoKeyRead-notification" id="autoKeyReadNotification">
+        <div class="autoKeyRead-modal">
+            <p>This is "Auto Key" feature allows you to make things easier for you.</p>
+            <b></b>
+            <p>Press 'W' for automaticly add a Win</p>
+            <b></b>
+            <p>Press 'S' for automaticly add a Lose</p>
+            <b></b>
+            <p>Press 'A' for automaticly Undo to last Result</p>
+            <b></b>
+            <p>Press 'D' for automaticly Redo.
+            <b1></b1>
+            <p>This helps automate the tracking of your strategy.</p>
+            <button id="closeAutoKeyRead">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Declare variables to track wins, losses, and history
+        let wins = 0;
+        let losses = 0;
+        let history = [];
+        let redoHistory = []; // Added redo history
+
+        // Select DOM elements
+        const winsElement = document.getElementById('wins');
+        const lossesElement = document.getElementById('losses');
+        const winrateElement = document.getElementById('winrate');
+        const confirmReset = document.getElementById('confirmReset');
+        const winBtn = document.getElementById('winBtn');
+        const loseBtn = document.getElementById('loseBtn');
+        const undoBtn = document.getElementById('undoBtn');
+        const redoBtn = document.getElementById('redoBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const confirmYes = document.getElementById('confirmYes');
+        const confirmNo = document.getElementById('confirmNo');
+        const autoKeyBtn = document.getElementById('autoKeyBtn');
+        const autoKeyReadBtn = document.getElementById('autoKeyReadBtn');
+        const autoKeyReadNotification = document.getElementById('autoKeyReadNotification');
+        const closeAutoKeyRead = document.getElementById('closeAutoKeyRead');
+
+        let autoKeyEnabled = false;
+
+        // Update Stats Function
+        function updateStats() {
+            winsElement.textContent = wins;
+            lossesElement.textContent = losses;
+            const total = wins + losses;
+            const winrate = total > 0 ? ((wins / total) * 100).toFixed(2) : 0;
+            winrateElement.textContent = winrate + '%';
+        }
+
+        // Handle Win Button Click
+        winBtn.addEventListener('click', function () {
+            wins++;
+            history.push('win');
+            redoHistory = [];
+            updateStats();
+        });
+
+        // Handle Lose Button Click
+        loseBtn.addEventListener('click', function () {
+            losses++;
+            history.push('lose');
+            redoHistory = [];
+            updateStats();
+        });
+
+        // Handle Undo Button Click
+        undoBtn.addEventListener('click', function () {
+            if (history.length > 0) {
+                const lastAction = history.pop();
+                if (lastAction === 'win') {
+                    wins = Math.max(wins - 1, 0);
+                } else if (lastAction === 'lose') {
+                    losses = Math.max(losses - 1, 0);
+                }
+                redoHistory.push(lastAction);
+                updateStats();
+            }
+        });
+
+        // Handle Redo Button Click
+        redoBtn.addEventListener('click', function () {
+            if (redoHistory.length > 0) {
+                const lastUndoAction = redoHistory.pop();
+                if (lastUndoAction === 'win') {
+                    wins++;
+                } else if (lastUndoAction === 'lose') {
+                    losses++;
+                }
+                history.push(lastUndoAction);
+                updateStats();
+            }
+        });
+
+        // Handle Reset Button Click
+        resetBtn.addEventListener('click', function () {
+            confirmReset.style.display = 'flex';
+        });
+
+        // Confirm Reset Action
+        confirmYes.addEventListener('click', function () {
+            wins = 0;
+            losses = 0;
+            history = [];
+            redoHistory = [];
+            updateStats();
+            confirmReset.style.display = 'none';
+        });
+
+        // Cancel Reset Action
+        confirmNo.addEventListener('click', function () {
+            confirmReset.style.display = 'none';
+        });
+
+        // Handle Auto Key Button Click
+        autoKeyBtn.addEventListener('click', function () {
+            autoKeyEnabled = !autoKeyEnabled;
+            autoKeyBtn.textContent = autoKeyEnabled ? 'Auto Key: On' : 'Auto Key: Off';
+        });
+
+        // Keyboard event listeners for Auto Key functionality
+        document.addEventListener('keydown', function (event) {
+            if (autoKeyEnabled) {
+                if (event.key === 'w' || event.key === 'W') {
+                    winBtn.click();
+                } else if (event.key === 's' || event.key === 'S') {
+                    loseBtn.click();
+                } else if (event.key === 'a' || event.key === 'A') {
+                    undoBtn.click();
+                } else if (event.key === 'd' || event.key === 'D') {
+                    redoBtn.click();
+                }
+            }
+        });
+
+        // Show AutoKey Read Notification
+        autoKeyReadBtn.addEventListener('click', function () {
+            autoKeyReadNotification.style.display = 'flex';
+        });
+
+        // Close AutoKey Read Notification
+        closeAutoKeyRead.addEventListener('click', function () {
+            autoKeyReadNotification.style.display = 'none';
+        });
+
+        // Initialize Stats
+        updateStats();
+    </script>
+
+</body>
+</html>
